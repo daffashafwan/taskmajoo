@@ -19,7 +19,7 @@ func CreateMerchantRepo(conn *gorm.DB) merchants.Repository {
 }
 
 func (rep *MerchantRepo) GetByUserId(ctx context.Context, id int) (merchants.Domain, error) {
-	var data Merchant
+	var data Merchants
 	err := rep.DB.Table("Merchants").Find(&data, "user_id=?", id)
 	if err.Error != nil {
 		return merchants.Domain{}, errors.New("data not found")

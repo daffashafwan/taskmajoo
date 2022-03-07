@@ -16,6 +16,15 @@ import (
 	_merchantController "github.com/daffashafwan/taskmajoo/controllers/merchant"
 	_merchantRepository "github.com/daffashafwan/taskmajoo/model/merchant"
 
+	//outlet
+	//_outletUsecase "github.com/daffashafwan/taskmajoo/business/outlets"
+	_outletRepository "github.com/daffashafwan/taskmajoo/model/outlet"
+
+	//transaction
+	_transactionUsecase "github.com/daffashafwan/taskmajoo/business/transactions"
+	_transactionController "github.com/daffashafwan/taskmajoo/controllers/transaction"
+	_transactionRepository "github.com/daffashafwan/taskmajoo/model/transaction"
+
 	"github.com/labstack/echo/v4"
 	"log"
 	"time"
@@ -63,10 +72,18 @@ func main() {
 	merchantUsecase := _merchantUsecase.NewMerchantUsecase(merchantRepository, timeoutContext, configJWT)
 	merchantController := _merchantController.NewMerchantController(merchantUsecase)
 
+	outletRepository := _outletRepository.CreateOutletRepo(Conn)
+	//outletUsecase := _outletUsecase.NewOutletUsecase(outletRepository, timeoutContext, configJWT)
+
+	transactionRepository := _transactionRepository.CreateTransactionRepo(Conn)
+	transactionUsecase := _transactionUsecase.NewTransactionUsecase(transactionRepository,merchantRepository,outletRepository, timeoutContext, configJWT)
+	transactionController := _transactionController.NewTransactionController(transactionUsecase, merchantUsecase)
+
 	routesInit := routes.ControllerList{
 		JwtConfig:          configJWT.Init(),
 		UserController:     *userController,
 		MerchantController: *merchantController,
+		TransactionController: *transactionController,
 	}
 
 	routesInit.RouteRegister(e)
