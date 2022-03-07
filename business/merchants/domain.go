@@ -2,23 +2,18 @@ package merchants
 
 import (
 	"context"
-	"time"
 )
 
 type Domain struct {
 	Id   int
-	Name string 
-	Username string 
-	Password string 
-	JWTToken string
-	CreatedAt time.Time 
-	UpdatedAt time.Time 
+	UserId int 
+	MerchantName string 
 }
 
 type Usecase interface {
-	Login(ctx context.Context, domain Domain) (Domain, error)
+	GetByUserId(ctx context.Context, id int) (Domain, error)
 }
 
 type Repository interface {
-	Login(ctx context.Context, user_name string, password string) (Domain, error)
+	GetByUserId(ctx context.Context, id int) (Domain, error)
 }

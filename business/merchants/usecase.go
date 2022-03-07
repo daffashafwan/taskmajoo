@@ -8,40 +8,27 @@ import (
 	errors "github.com/daffashafwan/taskmajoo/helpers/errors"
 )
 
-type UserUsecase struct {
+type MerchantUsecase struct {
 	Repo           Repository
 	contextTimeout time.Duration
 	ConfigJWT      middlewares.ConfigJWT
 }
 
-func NewUserUsecase(repo Repository, timeout time.Duration, configJWT middlewares.ConfigJWT) Usecase {
-	return &UserUsecase{
+func NewMerchantUsecase(repo Repository, timeout time.Duration, configJWT middlewares.ConfigJWT) Usecase {
+	return &MerchantUsecase{
 		ConfigJWT:      configJWT,
 		Repo:           repo,
 		contextTimeout: timeout,
 	}
 }
 
-// core bisinis login
-func (uc *UserUsecase) Login(ctx context.Context, domain Domain) (Domain, error) {
-	if domain.Username == "" {
-		return Domain{}, errors.ErrUsernamePasswordNotFound
-	}
-
-	if domain.Password == "" {
-		return Domain{}, errors.ErrUsernamePasswordNotFound
-	}
-
-	user, err := uc.Repo.Login(ctx, domain.Username, domain.Password)
-
+func (pc *MerchantUsecase) GetByUserId(ctx context.Context, id int) (Domain, error) {
+	user, err := pc.Repo.GetByUserId(ctx, id)
 	if err != nil {
 		return Domain{}, err
 	}
-	user.JWTToken, err = uc.ConfigJWT.GenerateTokenJWT(user.Id, 0)
-
-	if err != nil {
-		return Domain{}, err
+	if user.Id == 0 {
+		return Domain{}, errors.ErrIDNotFound
 	}
-
 	return user, nil
 }
